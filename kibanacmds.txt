@@ -277,3 +277,26 @@ GET myelkfirst/_search
 }
 
 # Refer to the documentation page (elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html)
+
+# Query for geo point - distance (elk2.py), change the "distance" value
+GET jun/_search
+{
+  "_source": [],
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": {
+        "match_all": {}
+      },
+      "filter": {
+        "geo_distance": {
+          "distance": "10000km",
+          "myloc": {
+            "lat": 66,
+            "lon": -155
+          }
+        }
+      }
+    }
+  }
+}
