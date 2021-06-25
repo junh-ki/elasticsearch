@@ -2,6 +2,7 @@
 
 GET _cat/indices
 GET myelkfirst/_search      myelkfirst=index
+GET myelkfirst/_doc/s3      myelkfirst=index
 GET myelkfirst/_count       myelkfirst=index
 DELETE myelkfirst           myelkfirst=index
 GET myelkfirst/_mapping
@@ -300,3 +301,26 @@ GET jun/_search
     }
   }
 }
+
+# Update a document (id=s3): adding a key
+POST myelkfirst/_update/s3
+{
+  "script": "ctx._source.name = 'Junhyung Ki'  "
+}
+GET myelkfirst/_doc/s3
+
+# Update a document (id=s3): removing a key
+POST myelkfirst/_update/s3
+{
+  "script": "ctx._source.remove('name')"
+}
+GET myelkfirst/_doc/s3
+
+# Update a field in a document (id=s3)
+POST myelkfirst/_update/s3
+{
+  "doc": {
+    "director": "Junhyung Ki"
+  }
+}
+GET myelkfirst/_doc/s3
