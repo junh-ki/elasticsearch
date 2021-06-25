@@ -1,0 +1,279 @@
+### Basics ###
+
+GET _cat/indices
+GET myelkfirst/_search      myelkfirst=index
+GET myelkfirst/_count       myelkfirst=index
+DELETE myelkfirst           myelkfirst=index
+GET myelkfirst/_mapping
+
+### Queries ###
+
+# Match Phrase
+GET myelkfirst/_search
+{
+  "_source": ["title", "cast", "director", "duration"],
+  "size": 20,
+  "query": {
+    "match_phrase": {
+      "title": "Norm of the North"
+    }
+  }
+}
+
+# Match
+GET myelkfirst/_search
+{
+  "_source": ["title", "cast", "director", "duration"],
+  "size": 20,
+  "query": {
+    "match": {
+      "title": "Norm of the North"
+    }
+  }
+}
+## Norm  ->
+## of    ->
+## the   ->
+## North ->
+
+# Aggregation
+GET myelkfirst/_search
+{
+  "size": 0,
+  "aggs": {
+    "cast_names": {
+      "terms": {
+        "field": "cast.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+# Multiple Aggregation
+GET myelkfirst/_search
+{
+  "size": 0,
+  "aggs": {
+    "description": {
+      "terms": {
+        "field": "description.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+    ,
+    "cast": {
+      "terms": {
+        "field": "cast.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+# Give me the aggregation where "North" is in the title.
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "match": {
+      "title": "North"
+    }
+  },
+  "aggs": {
+    "description": {
+      "terms": {
+        "field": "description.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+    ,
+    "cast": {
+      "terms": {
+        "field": "cast.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      }
+    }
+  }
+}
+
+# Query the documents where "North" OR "King" are in the title
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [],
+      "should": [
+        {
+          "match": {
+            "title": {
+              "query": "North"
+            }
+          }
+        },
+        {
+          "match": {
+            "title": {
+              "query": "King"
+            }
+          }
+        }
+      ],
+      "must_not": []
+    }
+  }
+}
+
+# Query the documents where "North" AND "King" are in the title
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "title": {
+              "query": "North"
+            }
+          }
+        },
+        {
+          "match": {
+            "title": {
+              "query": "King"
+            }
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
+
+# Query the documents where "North" AND "King" are not in the title
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [],
+      "should": [],
+      "must_not": [
+        {
+          "match": {
+            "title": {
+              "query": "North"
+            }
+          }
+        },
+        {
+          "match": {
+            "title": {
+              "query": "King"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Query the documents where the director is "Richard" and "Bruce" is not in the cast.
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "match": {
+            "director": {
+              "query": "Richard"
+            }
+          }
+        }
+      ],
+      "must_not": [
+        {
+          "match": {
+            "cast": {
+              "query": "Bruce"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+# Query the documents where "North" and "King" both are in the title
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "query_string": {
+      "query": "(North) AND (King)",
+      "default_field": "title"
+    }
+  }
+}
+
+# Query the documents where "North" or "King" is(are) in the title
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "query_string": {
+      "query": "(North) OR (King)",
+      "default_field": "title"
+    }
+  }
+}
+
+# Query the documents where "norm-" is in the title using regex (regular expression)
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "query_string": {
+      "query": "norm*",
+      "default_field": "title"
+    }
+  }
+}
+
+# Query the documents where "norm-" is in the title using regex (regular expression)
+GET myelkfirst/_search
+{
+  "size": 10,
+  "query": {
+    "query_string": {
+      "query": "norm*",
+      "fields": ["title", "cast"]
+    }
+  }
+}
+
+# Refer to the documentation page (elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html)
