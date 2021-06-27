@@ -1,5 +1,5 @@
 # elasticsearch
 
-feature (git rebase test 1)
+m1
 
-feature 2 (git rebase test commit 2)
+m2
