@@ -1,0 +1,10 @@
+[node1]
+35.244.101.47
+[node2]
+35.244.118.143
+[node3]
+35.189.50.32
+[elasticsearch.children]
+node1
+node2
+node3
