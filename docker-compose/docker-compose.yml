@@ -1,11 +1,11 @@
-version: '2.2'
+version: '3.9'
 services:
-  node01:
-    image: elasticsearch:8.5.0
-    container_name: node01
+  es-node01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.5.0
+    container_name: es-node01
     environment:
-      - node.name=node01
-      - cluster.name=es-cluster-7
+      - node.name=es-node01
+      - cluster.name=es-cluster-8
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
     ulimits:
@@ -20,15 +20,15 @@ services:
       - es-network
 
   kibana:
-    image: kibana:8.5.0
+    image: docker.elastic.co/kibana/kibana:8.5.0
     environment:
-      ELASTICSEARCH_HOSTS: http://node01:9200
+      ELASTICSEARCH_HOSTS: http://es-node01:9200
     ports:
       - 5601:5601
     networks:
       - es-network
     depends_on:
-      - node01
+      - es-node01
 
 volumes:
   es-data01:
